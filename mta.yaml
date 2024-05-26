@@ -1,0 +1,57 @@
+_schema-version: "3.2"
+ID: devopspoc
+version: 0.0.1
+modules:
+- name: devopspoc-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: devopspoc-destination-service
+    parameters:
+      content-target: true
+  - name: devopspoc_html_repo_host
+    parameters:
+      service-key:
+        name: devopspoc_html_repo_host-key
+  - name: uaa_devopspoc
+    parameters:
+      service-key:
+        name: uaa_devopspoc-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: devopspocappr_devopspoc_html_repo_host
+          ServiceInstanceName: devopspoc-html5-app-host-service
+          ServiceKeyName: devopspoc_html_repo_host-key
+          sap.cloud.service: devopspocappr
+        - Authentication: OAuth2UserTokenExchange
+          Name: devopspocappr_uaa_devopspoc
+          ServiceInstanceName: devopspoc-xsuaa-service
+          ServiceKeyName: uaa_devopspoc-key
+          sap.cloud.service: devopspocappr
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+resources:
+- name: devopspoc-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      version: 1.0.0
+    service: destination
+    service-name: devopspoc-destination-service
+    service-plan: lite
+- name: devopspoc_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: devopspoc-html5-app-host-service
+    service-plan: app-host
+- name: uaa_devopspoc
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: devopspoc-xsuaa-service
+    service-plan: application
